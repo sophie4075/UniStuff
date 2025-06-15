@@ -19,3 +19,28 @@ fadeStart = reverseIndex * delay;
 fadeDuration = 8;
 
 linear(timeToFrames(time), fadeStart, fadeStart + fadeDuration, 0, 100);
+----
+// Apply a custom expression to a specific property on selected layers
+{
+    var myExpression = "delay = 2;\ntotal = thisComp.numLayers;\nreverseIndex = total - index;\nfadeStart = reverseIndex * delay;\nfadeDuration = 8;\nlinear(timeToFrames(time), fadeStart, fadeStart + fadeDuration, 0, 100);";
+
+    var propName = "Opacity"; // or "Position", "Scale", etc.
+
+    var selected = app.project.activeItem.selectedLayers;
+
+    if (selected.length > 0){
+        app.beginUndoGroup("Apply Expression to All");
+
+        for (var i = 0; i < selected.length; i++){
+            try {
+                selected[i].property("Transform").property(propName).expression = myExpression;
+            } catch(e){
+                alert("Fehler bei Layer " + selected[i].name + ": " + e.toString());
+            }
+        }
+
+        app.endUndoGroup();
+    } else {
+        alert("Bitte Layer auswählen.");
+    }
+}
