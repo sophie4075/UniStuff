@@ -44,3 +44,33 @@ linear(timeToFrames(time), fadeStart, fadeStart + fadeDuration, 0, 100);
         alert("Bitte Layer auswählen.");
     }
 }
+-----------
+{
+    var myExpression = 
+    'freq = 0.2;\n' +
+    'amp = 10;\n' +
+    'seedRandom(index, true);\n' +
+    'offset = wiggle(freq, amp)[1] - value[1];\n' +
+    '[value[0], value[1] + offset];';
+
+    var propName = "Position";
+
+    var selected = app.project.activeItem.selectedLayers;
+
+    if (selected.length > 0) {
+        app.beginUndoGroup("Apply Aurora Wiggle");
+
+        for (var i = 0; i < selected.length; i++) {
+            try {
+                selected[i].property("Transform").property(propName).expression = myExpression;
+            } catch(e){
+                alert("Fehler bei Layer " + selected[i].name + ": " + e.toString());
+            }
+        }
+
+        app.endUndoGroup();
+        alert("Aurora-Wiggle erfolgreich angewendet auf " + selected.length + " Layer.");
+    } else {
+        alert("Bitte wähle mindestens einen Layer aus.");
+    }
+}
