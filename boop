@@ -74,3 +74,18 @@ linear(timeToFrames(time), fadeStart, fadeStart + fadeDuration, 0, 100);
         alert("Bitte wähle mindestens einen Layer aus.");
     }
 }
+
+----------
+base = value; // greift deine Keyframes
+startTime = 3; // ab wann Flackern starten soll (Sekunden)
+
+amp = 15;        // Max. Abweichung (%)
+freq = 1.2;      // Frequenz (weniger = langsamer)
+seed = 7;        // beliebiger Wert für Variation
+
+if (time > startTime) {
+  base + amp * Math.sin(freq * (time - startTime) * Math.PI * 2 + seed);
+} else {
+  base;
+}
+
