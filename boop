@@ -8,3 +8,14 @@ fadeStart = reverseIndex * delay;
 fadeDuration = 8;
 
 linear(timeToFrames(time), fadeStart, fadeStart + fadeDuration, 0, 100);
+
+-----
+
+delay = 2; // Frames zwischen den Layern
+totalLayers = 37;
+
+reverseIndex = totalLayers - index; // damit Layer 1 zuletzt kommt
+fadeStart = reverseIndex * delay;
+fadeDuration = 8;
+
+linear(timeToFrames(time), fadeStart, fadeStart + fadeDuration, 0, 100);
