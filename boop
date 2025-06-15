@@ -1,0 +1,10 @@
+delay = 2;
+totalGroups = 37;
+
+groupIndex = thisProperty.propertyGroup(2).propertyIndex;
+reverseIndex = totalGroups - groupIndex;
+
+fadeStart = reverseIndex * delay;
+fadeDuration = 8;
+
+linear(timeToFrames(time), fadeStart, fadeStart + fadeDuration, 0, 100);
