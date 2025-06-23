@@ -32,9 +32,12 @@ RUN patch src/botantools/botan/botan/secmem.h < /opt/fix_build_gcc4.7.diff && \
     make -j$(nproc) && make install
 
 WORKDIR /opt
-#neu
-RUN wget https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/qca2-plugin-ossl/2.0.0~beta3-2/qca2-plugin-ossl_2.0.0~beta3.orig.tar.bz2 && \
-    tar -xjf qca2-plugin-ossl_2.0.0~beta3.orig.tar.bz2
+RUN curl -L -o qca2-plugin-ossl.tar.bz2 "https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/qca2-plugin-ossl/2.0.0~beta3-2/qca2-plugin-ossl_2.0.0~beta3.orig.tar.bz2" && \
+    if ! file qca2-plugin-ossl.tar.bz2 | grep -q 'bzip2 compressed'; then \
+        echo "Download failed or invalid file"; cat qca2-plugin-ossl.tar.bz2; exit 1; \
+    fi && \
+    tar -xjf qca2-plugin-ossl.tar.bz2
+
 
 ADD https://raw.githubusercontent.com/DarkReZuS/silenteye/0.4/vagrant/vagrant_data/detect_ssl2_available.diff /opt/detect_ssl2_available.diff
 ADD https://raw.githubusercontent.com/DarkReZuS/silenteye/0.4/vagrant/vagrant_data/detect_md2_available.diff /opt/detect_md2_available.diff
