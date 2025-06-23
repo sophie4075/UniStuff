@@ -32,13 +32,14 @@ RUN patch src/botantools/botan/botan/secmem.h < /opt/fix_build_gcc4.7.diff && \
     make -j$(nproc) && make install
 
 WORKDIR /opt
-RUN wget http://delta.affinix.com/download/qca/2.0/plugins/qca-ossl-2.0.0-beta3.tar.bz2 && \
-    tar -xjf qca-ossl-2.0.0-beta3.tar.bz2
+#neu
+RUN wget https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/qca2-plugin-ossl/2.0.0~beta3-2/qca2-plugin-ossl_2.0.0~beta3.orig.tar.bz2 && \
+    tar -xjf qca2-plugin-ossl_2.0.0~beta3.orig.tar.bz2
 
 ADD https://raw.githubusercontent.com/DarkReZuS/silenteye/0.4/vagrant/vagrant_data/detect_ssl2_available.diff /opt/detect_ssl2_available.diff
 ADD https://raw.githubusercontent.com/DarkReZuS/silenteye/0.4/vagrant/vagrant_data/detect_md2_available.diff /opt/detect_md2_available.diff
 
-WORKDIR /opt/qca-ossl
+WORKDIR /opt/qca-ossl-2.0.0-beta3
 RUN patch qca-ossl.cpp < /opt/detect_ssl2_available.diff && \
     patch qca-ossl.cpp < /opt/detect_md2_available.diff && \
     ./configure --qtdir=/usr/local/Qt-4.8.7-release && \
@@ -50,6 +51,6 @@ RUN git clone --branch 0.4 https://github.com/achorein/silenteye.git
 WORKDIR /opt/silenteye
 RUN ENABLE_MODULE=1 cmake . && make -j$(nproc) && make install
 
-ENV SILENTEYE_PLUGIN_PATH=/opt/silenteye/modules
+#ENV SILENTEYE_PLUGIN_PATH=/opt/silenteye/modules
 
-CMD ["./silenteye", "--help"]
+CMD ["./silenteye"]
