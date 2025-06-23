@@ -1,0 +1,83 @@
+FROM i386/ubuntu:12.04
+
+RUN sed -i 's/archive.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list && \
+    apt-get update && \
+    apt-get install -y \
+        libqt4-core \
+        libqt4-gui \
+        libqt4-network \
+        libqt4-xml \
+        libqca2 \
+        libjpeg62 \
+        wget \
+        gdebi-core |
+
+
+#WORKDIR /opt
+
+RUN apt-get update && apt-get install -y libicu48
+
+RUN apt-get update && apt-get install -y xvfb
+
+# Install prerequisites
+RUN apt-get update && apt-get install -y \
+    cmake \
+    g++ \
+    git \
+    qt4-qmake \
+    libssl-dev \
+    libqt4-dev \
+    libphonon-dev \
+    make \
+    libtool \
+    autoconf \
+    automake \
+    pkg-config
+
+#Clone and build QCA
+#WORKDIR /opt
+RUN apt-get update && apt-get install -y bzip2 && \
+    wget https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/qca2/2.0.3-5/qca2_2.0.3.orig.tar.bz2 && \
+    tar -xjf qca2_2.0.3.orig.tar.bz2 && \
+    cd qca-2.0.3 && \
+    ./configure --prefix=/usr && \
+    make -j$(nproc) && \
+    make install
+
+
+RUN wget https://download.qt.io/archive/qt/4.8/4.8.7/qt-everywhere-opensource-src-4.8.7.tar.gz && \
+    tar -xzf qt-everywhere-opensource-src-4.8.7.tar.gz && \
+    cd qt-everywhere-opensource-src-4.8.7 && \
+    ./configure -opensource -confirm-license \
+        -release -nomake examples -nomake demos -no-qt3support -no-scripttools \
+        -no-opengl -no-webkit -no-phonon -no-sql-sqlite -gtkstyle \
+        -prefix /usr/local/Qt-4.8.7-release && \
+    make -j$(nproc) && \
+    make install
+
+
+ENV PATH="/usr/local/Qt-4.8.7-release/bin:$PATH"
+ENV CMAKE_PREFIX_PATH="/usr/local/Qt-4.8.7-release"
+
+#WORKDIR /opt
+RUN git clone --branch 0.4 https://github.com/achorein/silenteye.git && \
+    cd silenteye && \
+    ENABLE_MODULE=1 cmake . && \
+    make -j$(nproc) && \
+    make install
+   # && \cp /opt/silenteye/silenteye /usr/bin/
+
+RUN apt-get update && apt-get install -y curl
+
+# Bilddateien vom Moodle-Server holen
+RUN curl 'https://moodle.oncampus.de/pluginfile.php/2032805/mod_resource/content/1/mooin.jpg' \
+    -H 'Cookie: MOODLEID1_=c%2B%25F5%25DB%25BF%25BF5w%25FC; MoodleSession=1ulv13b857g9c4l3m0pvppsfuf' \
+    -o mooin.jpg
+
+RUN curl 'https://moodle.oncampus.de/pluginfile.php/2032806/mod_resource/content/1/mooin.bmp' \
+    -H 'Cookie: MOODLEID1_=c%2B%25F5%25DB%25BF%25BF5w%25FC; MoodleSession=1ulv13b857g9c4l3m0pvppsfuf' \
+    -o mooin.bmp
+
+WORKDIR /opt/silenteye
+ENV SILENTEYE_PLUGIN_PATH=/opt/silenteye/modules
+CMD ["./silenteye"]
